@@ -1,3 +1,3 @@
 # Just a quick way to run the project with poetry
 .SILENT run:
-	poetry run python src/maze/main.py
+	poetry run python -B src/maze/main.py

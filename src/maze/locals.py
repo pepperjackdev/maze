@@ -1,4 +1,6 @@
-""" Custom dataypes """
-
-
-""" Common constants """
+""" Colors """
+BLACK = 0, 0, 0
+RED = 0xFF, 0, 0
+GREEN = 0, 0xFF, 0
+BLUE = 0, 0, 0xFF
+WHITE = 0xFF, 0xFF, 0xFF
