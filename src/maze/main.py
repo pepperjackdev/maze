@@ -1,10 +1,7 @@
 import pygame
 import sys
 
-from pygame.locals import * # type: ignore
-
-from core import Maze
-from views import MazeView
+from pygame.locals import * #type: ignore
 
 pygame.init()
 
@@ -17,15 +14,11 @@ if surface == None: raise ValueError("No surface found")
 
 fps = pygame.time.Clock()
 
-mazeview = MazeView(surface, Maze((0, 0)))
-
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-
-    mazeview.draw()
 
     pygame.display.update()
     fps.tick(60)
