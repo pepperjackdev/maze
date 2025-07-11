@@ -6,6 +6,6 @@ from . import View
 from locals import *
 
 class MazeView(View):
-    def __init__(self, surface: Surface, maze: Maze) -> None:
-        super().__init__(surface)
+    def __init__(self, maze: Maze, size: tuple[int, int], center: tuple[int, int]) -> None:
+        super().__init__(size, center)
         self._maze = maze
