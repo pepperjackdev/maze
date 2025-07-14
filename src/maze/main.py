@@ -5,9 +5,8 @@ from pygame.locals import * #type: ignore
 
 pygame.init()
 
-# Window Configs
 pygame.display.set_caption("Maze")
-pygame.display.set_mode((800, 600), RESIZABLE)
+pygame.display.set_mode((600, 600), RESIZABLE)
 
 surface = pygame.display.get_surface()
 if surface == None: raise ValueError("No surface found")
