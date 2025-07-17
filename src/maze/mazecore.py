@@ -3,73 +3,87 @@ from enum import Enum
 Size = tuple[int, int] 
 Point = tuple[int, int]
 
-def translate(source: Point, vector: Point):
-    sy, sx, vy, vx = source + vector
-    return sy + vy, sx + vx
-
-NEIGHBOUR_DIRECTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+def translate(start: Point, delta: Point):
+    start_row, start_column = start
+    delta_row, delta_column = delta
+    return start_row + delta_row, start_column + delta_column
 
 class Status(Enum):
     UNVISITED = 0
     VISITED = 1
 
 class Cell:
-    def __init__(self, maze: 'Maze') -> None:
-        self.maze = maze
-        self.status = Status.UNVISITED
+    def __init__(self, position: Point) -> None:
+        self._status = Status.UNVISITED
+        self._position = position
 
-    def neighbours(self) -> set['Cell']:
-        neighbours = set()
-        for direction in NEIGHBOUR_DIRECTIONS:
-            cell = self.maze.get_cell(translate(self.maze.get_pos_of(self), direction))
-            if cell != None:
-                neighbours.add(cell)
-        return neighbours
+    def get_status(self):
+        return self._status
 
-    def mark(self, status: Status):
-        self.status = status
+    def set_status(self, status: Status):
+        self._status = status
+
+    def get_position(self):
+        return self._position
 
 class Wall:
     def __init__(self, cell_a, cell_b) -> None:
-        self.cells = frozenset([cell_a, cell_b])
+        self._cells = frozenset([cell_a, cell_b])
 
     def __eq__(self, value: object) -> bool:
         if isinstance(value, Wall):
-            return self.cells == value.cells
+            return self._cells == value._cells
         return False
     
     def __hash__(self) -> int:
-        return hash(self.cells)
+        return hash(self._cells)
 
 class Maze:
+    _NEIGHBOURS_DIRECTIONS = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
     def __init__(self, size: Size) -> None:
-        self.rows, self.cols = size
-        self.cells = [[Cell(self) for _ in range(self.rows)] for _ in range(self.cols)]
-        self.walls = set()
+        self._rows, self._columns = size
+        self._cells = [[Cell((row, column)) for row in range(self._rows)] for column in range(self._columns)]
+        self._walls = set()
+
+    def get_rows(self):
+        return self._rows
+    
+    def get_columns(self):
+        return self._columns
     
     def get_size(self):
-        return self.rows, self.cols
+        return self._rows, self._columns
     
-    def get_cell(self, pos) -> Cell | None:
-        row, col = pos
-        if not 0 <= row < self.rows or not 0 <= col < self.cols: return None
-        return self.cells[row][col]
+    def _is_valid_position(self, position: Point) -> bool:
+        row, column = position
+        return 0 <= row < self._rows and 0 <= column < self._columns
     
-    def get_pos_of(self, cell: Cell) -> Point | None:
-        for row in range(self.rows):
-            for col in range(self.cols):
-                if cell == self.get_cell((row, col)):
-                    return (row, col)
+    def get_cells(self) -> list[list[Cell]]:
+        return self._cells
+
+    def get_cell(self, position) -> Cell | None:
+        if self._is_valid_position(position): 
+            row, column = position
+            return self._cells[row][column]
         return None
     
-    def get_walls(self) -> set[Wall]:
-        return self.walls
+    def get_cells_adjacent_to(self, cell: Cell) -> set[Cell]:
+        neighbours = set()
+        for direction in Maze._NEIGHBOURS_DIRECTIONS:
+            neighbour = self.get_cell(translate(cell.get_position(), direction))
+            if neighbour != None:
+                neighbours.add(neighbour)
+        return neighbours
     
-    def add_wall(self, cell_a: Cell, cell_b: Cell):
-        self.walls.add(Wall(cell_a, cell_b))
+    def get_walls(self) -> set[Wall]:
+        return self._walls
+    
+    def get_wall(self, wall: Wall):
+        return wall in self._walls
+    
+    def add_wall(self, wall: Wall):
+        self._walls.add(wall)
 
-    def is_linked(self, cell_a: Cell, cell_b: Cell):
-        return not Wall(cell_a, cell_b) in self.walls
-
-    def rem_wall(self, cell_a: Cell, cell_b: Cell):
-        self.walls.discard(Wall(cell_a, cell_b))
+    def remove_wall(self, wall: Wall):
+        self._walls.discard(wall)

@@ -4,7 +4,7 @@ import asyncio
 
 from pygame.locals import * #type: ignore
 
-from mazecore import Maze, Cell, Status
+from mazecore import Maze, Cell, Wall, Status
 from mazeui import MazeUI
 
 pygame.init()
@@ -20,24 +20,24 @@ fps = pygame.time.Clock()
 maze = Maze((30, 30))
 ui = MazeUI((600, 600), maze)
 
-# Adding walls
-def wallify(maze: Maze):
-    for row in maze.cells:
-        for cell in row:
-            for neigh in cell.neighbours():
-                maze.add_wall(cell, neigh)
+def add_all_walls(maze: Maze):
+    cell = maze.get_cell((0, 0))
+    cell.set_status(Status.VISITED)
+    for neighbour in maze.get_cells_adjacent_to(cell):
+        if neighbour.get_status() == Status.UNVISITED:
+            maze.add_wall(Wall(cell, neighbour))
+            depth_first(neighbour)
 
-wallify(maze)
+def depth_first(cell: Cell):
+    cell.set_status(Status.VISITED)
+    for neighbour in maze.get_cells_adjacent_to(cell):
+        if neighbour.get_status() == Status.UNVISITED:
+            maze.remove_wall(Wall(cell, neighbour))
+            depth_first(neighbour)
 
-# Maze generation
-def generate(cell: Cell):
-    cell.mark(Status.VISITED)
-    for neighbour in cell.neighbours():
-        if neighbour.status != Status.UNVISITED: continue
-        maze.rem_wall(cell, neighbour)
-        generate(neighbour)
-
-generate(maze.get_cell((0, 0)))
+add_all_walls(maze)
+# depth_first(maze.get_cell((0, 0)))
+print(maze.get_wall(Wall(maze.get_cell((3, 0)), maze.get_cell((4, 0)))))
 
 while True:
     for event in pygame.event.get():
@@ -45,7 +45,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-    ui.draw(surface)
+    ui.draw_to(surface)
 
     pygame.display.update()
     fps.tick(60)
