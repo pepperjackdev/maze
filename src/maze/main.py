@@ -6,18 +6,21 @@ from pygame.locals import RESIZABLE, QUIT
 from mazecore import Maze, Cell, Wall, Status
 from mazeui import MazeUI
 
+#FIXME: should be deleted
+sys.setrecursionlimit(10000)
+
 pygame.init()
 
 pygame.display.set_caption("Maze")
-pygame.display.set_mode((600, 600), RESIZABLE)
+pygame.display.set_mode((700, 700), RESIZABLE)
 
 surface = pygame.display.get_surface()
 if surface == None: raise ValueError("No surface found")
 
 fps = pygame.time.Clock()
 
-maze = Maze((30, 30))
-maze_ui = MazeUI((600, 600), maze)
+maze = Maze((100, 100))
+maze_ui = MazeUI((700, 700), maze)
 
 # just fill with walls
 for row in maze.get_cells():
@@ -47,7 +50,7 @@ def solving_depth_first(maze: Maze, current: Cell, target: Cell, iter = 0):
                 return result
     return []
                 
-path = solving_depth_first(maze, maze.get_cell((0, 0)), maze.get_cell((29, 29)))
+path = solving_depth_first(maze, maze.get_cell((0, 0)), maze.get_cell((99, 99)))
 
 while True:
     for event in pygame.event.get():
