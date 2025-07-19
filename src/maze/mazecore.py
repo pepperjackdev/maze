@@ -18,6 +18,14 @@ class Cell:
         self._status = Status.UNVISITED
         self._position = position
 
+    def __eq__(self, obj: object) -> bool:
+        if isinstance(obj, Cell):
+            return obj.get_position() == self.get_position()
+        return False
+    
+    def __hash__(self) -> int:
+        return hash(self._position)
+
     def __str__(self) -> str:
         return f"{self._position}"
     
@@ -37,15 +45,15 @@ class Wall:
     def __init__(self, position_a: Point, position_b: Point) -> None:
         self._positions = frozenset([position_a, position_b])
 
-    def __eq__(self, value: object) -> bool:
-        if isinstance(value, Wall):
-            return self._positions == value.get_cells_positions()
+    def __eq__(self, obj: object) -> bool:
+        if isinstance(obj, Wall):
+            return self._positions == obj.get_positions()
         return False
     
     def __hash__(self) -> int:
         return hash(self._positions)
     
-    def get_cells_positions(self) -> frozenset[Point]:
+    def get_positions(self) -> frozenset[Point]:
         return self._positions
 
 class Maze:
@@ -64,6 +72,14 @@ class Maze:
     
     def get_size(self):
         return self._rows, self._columns
+    
+    def reset_visits(self):
+        for row in range(self._rows):
+            for column in range(self._columns):
+                cell = self.get_cell((row, column))
+                assert cell != None
+                cell.set_status(Status.UNVISITED)
+
     
     def _is_valid_position(self, position: Point) -> bool:
         row, column = position
@@ -84,6 +100,14 @@ class Maze:
             neighbour = self.get_cell(translate(cell.get_position(), direction))
             if neighbour != None:
                 neighbours.add(neighbour)
+        return neighbours
+    
+    def get_linked_cells_adjacent_to(self, cell: Cell) -> set[Cell]:
+        neighbours = self.get_cells_adjacent_to(cell)
+        linked_neighbours = set()
+        for neighbour in neighbours:
+            if not self.there_is_wall(Wall(cell.get_position(), neighbour.get_position())):
+                linked_neighbours.add(neighbour)
         return neighbours
     
     def get_walls(self) -> frozenset[Wall]:
