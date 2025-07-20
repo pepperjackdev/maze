@@ -8,45 +8,6 @@ def translate(start: Point, delta: Point):
     delta_row, delta_column = delta
     return start_row + delta_row, start_column + delta_column
 
-class Node: ...
-
-class Edge:
-    def __init__(self, node_a: Node, node_b: Node) -> None:
-        self._nodes = frozenset([node_a, node_b])
-
-class Graph:
-    def __init__(self) -> None:
-        self._nodes = set()
-        self._edges = set()
-
-    def nodes(self) -> frozenset[Node]:
-        return frozenset(self._nodes)
-
-    def add(self, node: Node) -> None:
-        self._nodes.add(node)
-
-    def remove(self, node: Node) -> None:
-        self._nodes.discard(node)
-
-    def edges(self) -> frozenset[Edge]:
-        return frozenset(self._edges)
-
-    def link(self, node_a: Node, node_b: Node) -> None:
-        self._edges.add(Edge(node_a, node_b))
-
-    def unlink(self, node_a: Node, node_b: Node) -> None:
-        self._edges.discard(Edge(node_a, node_b))
-
-    def linked(self, node_a: Node, node_b: Node) -> bool:
-        return Edge(node_a, node_b) in self._edges
-    
-    def neighbours(self, node) -> set[Node]:
-        neighbours = set()
-        for candidate in self._nodes:
-            if self.linked(node, candidate):
-                neighbours.add(candidate)
-        return neighbours 
-
 class Status(Enum):
     UNVISITED = 0
     VISITED = 1

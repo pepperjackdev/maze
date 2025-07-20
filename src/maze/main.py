@@ -19,7 +19,7 @@ if surface == None: raise ValueError("No surface found")
 
 fps = pygame.time.Clock()
 
-maze = Maze((100, 100))
+maze = Maze((6, 6))
 maze_ui = MazeUI((700, 700), maze)
 
 # just fill with walls
@@ -50,7 +50,7 @@ def solving_depth_first(maze: Maze, current: Cell, target: Cell, iter = 0):
                 return result
     return []
                 
-path = solving_depth_first(maze, maze.get_cell((0, 0)), maze.get_cell((99, 99)))
+path = solving_depth_first(maze, maze.get_cell((0, 0)), maze.get_cell((5, 5)))
 
 while True:
     for event in pygame.event.get():
