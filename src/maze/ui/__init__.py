@@ -1,0 +1,1 @@
+from .mazeui import UI, OrtogonalMazeUI

@@ -3,54 +3,25 @@ import sys
 
 from pygame.locals import RESIZABLE, QUIT
 
-from mazecore import Maze, Cell, Wall, Status
-from mazeui import MazeUI
-
-#FIXME: should be deleted
-sys.setrecursionlimit(10000)
+from core import OrtogonalMaze, Size
+from maze.core.utils import Point
+from ui import OrtogonalMazeUI
 
 pygame.init()
 
 pygame.display.set_caption("Maze")
-pygame.display.set_mode((700, 700), RESIZABLE)
+pygame.display.set_mode((600, 600), RESIZABLE)
 
 surface = pygame.display.get_surface()
 if surface == None: raise ValueError("No surface found")
 
 fps = pygame.time.Clock()
 
-maze = Maze((6, 6))
-maze_ui = MazeUI((700, 700), maze)
+ortogonal_maze = OrtogonalMaze(Size(2, 2))
+ortogonal_maze_ui = OrtogonalMazeUI(ortogonal_maze)
 
-# just fill with walls
-for row in maze.get_cells():
-    for cell in row:
-        for neighbour in maze.get_cells_adjacent_to(cell):
-            maze.add_wall(Wall(cell.get_position(), neighbour.get_position()))
-
-# using depth-first to generate the maze
-def depth_first(maze: Maze, cell: Cell):
-    cell.set_status(Status.VISITED)
-    for neighbour in maze.get_cells_adjacent_to(cell):
-        if neighbour is not None and neighbour.get_status() == Status.UNVISITED:
-            maze.remove_wall(Wall(cell.get_position(), neighbour.get_position()))
-            depth_first(maze, neighbour)
-
-depth_first(maze, maze.get_cell((0, 0))) #type: ignore
-maze.reset_visits()
-
-def solving_depth_first(maze: Maze, current: Cell, target: Cell, iter = 0):
-    current.set_status(Status.VISITED)
-    if current.get_position() == target.get_position(): 
-        return list([current])
-    for neighbour in maze.get_linked_cells_adjacent_to(current):
-        if neighbour.get_status() == Status.UNVISITED:
-            if (result := solving_depth_first(maze, neighbour, target, iter + 1)) != []:
-                result.append(current)
-                return result
-    return []
-                
-path = solving_depth_first(maze, maze.get_cell((0, 0)), maze.get_cell((5, 5)))
+# TODO: add more consistent tests
+ortogonal_maze.add_wall(Point(0, 0), Point(0, 1))
 
 while True:
     for event in pygame.event.get():
@@ -58,7 +29,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-    maze_ui.draw_to(surface, path)
+    ortogonal_maze_ui.draw_to(surface)
 
     pygame.display.update()
     fps.tick(60)

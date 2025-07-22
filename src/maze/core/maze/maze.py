@@ -1,12 +1,11 @@
-from graph import Graph, Node, Edge
-from point import Point
-from size import Size
+from core import Graph, Node
+from core.utils import Point, Size
 
 from bidict import bidict
 
 class Maze:
     def __init__(self, graph: Graph = Graph()) -> None:
-        self.__graph = graph
+        self._graph = graph
     
 class OrtogonalMaze(Maze):
     __ADJACENT_NODES_DIRECTIONS = [
@@ -29,7 +28,7 @@ class OrtogonalMaze(Maze):
             for column in range(self.__size.width):
                 node = Node()
                 self.__map[Point(row, column)] = node
-                self.__graph.add(node)
+                self._graph.add(node)
 
     def get_rows(self):
         return self.__size.height
@@ -40,14 +39,15 @@ class OrtogonalMaze(Maze):
     def get_size(self):
         return self.__size
     
-    def __validate(self, point: Point):
+    def __validate(self, point: Point) -> bool:
         return 0 <= point.row < self.get_rows() and 0 <= point.column < self.get_columns()
     
     def get_node(self, point: Point) -> Node | None:
+        #FIXME: point seems to not be in self.__map() even if it is!
         if self.__validate(point):
             return self.__map[point]
         return None
-    
+
     def get_node_else_raise(self, point: Point):
         if (node := self.get_node(point)) != None:
             return node
@@ -56,30 +56,30 @@ class OrtogonalMaze(Maze):
     def get_nodes_adjacent_to(self, node: Node):
         adjacent_nodes = set()
         for direction in OrtogonalMaze.__ADJACENT_NODES_DIRECTIONS:
-            adjacent = self.get_node(self.__map[:node] + direction)
+            adjacent = self.get_node(self.__map.inverse[node] + direction)
             if adjacent != None: adjacent_nodes.add(adjacent)
         return adjacent_nodes
     
     def get_nodes_adjacent_and_linked_to(self, node: Node):
         return set.intersection(
             self.get_nodes_adjacent_to(node),
-            self.__graph.neighbours_of(node)
+            self._graph.neighbours_of(node)
         )
     
     def add_wall(self, node_a: Point, node_b: Point):
-        self.__graph.unlink(
+        self._graph.unlink(
             self.get_node_else_raise(node_a), 
             self.get_node_else_raise(node_b)
         )
     
     def remove_wall(self, node_a: Point, node_b: Point):
-        self.__graph.link(
+        self._graph.link(
             self.get_node_else_raise(node_a), 
             self.get_node_else_raise(node_b)
         )
 
     def there_is_wall(self, node_a: Point, node_b: Point):
-        self.__graph.linked(
+        self._graph.linked(
             self.get_node_else_raise(node_a), 
             self.get_node_else_raise(node_b)
         )
