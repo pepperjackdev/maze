@@ -4,7 +4,7 @@ import sys
 from pygame.locals import RESIZABLE, QUIT
 
 from core import OrtogonalMaze, Size
-from maze.core.utils import Point
+from core.utils import Point
 from ui import OrtogonalMazeUI
 
 pygame.init()
@@ -17,11 +17,11 @@ if surface == None: raise ValueError("No surface found")
 
 fps = pygame.time.Clock()
 
-ortogonal_maze = OrtogonalMaze(Size(2, 2))
-ortogonal_maze_ui = OrtogonalMazeUI(ortogonal_maze)
+maze = OrtogonalMaze(Size(5, 5))
+maze_ui = OrtogonalMazeUI(maze)
 
 # TODO: add more consistent tests
-ortogonal_maze.add_wall(Point(0, 0), Point(0, 1))
+maze.remove_wall(Point(0, 0), Point(1, 0))
 
 while True:
     for event in pygame.event.get():
@@ -29,7 +29,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-    ortogonal_maze_ui.draw_to(surface)
+    maze_ui.draw_to(surface)
 
     pygame.display.update()
     fps.tick(60)

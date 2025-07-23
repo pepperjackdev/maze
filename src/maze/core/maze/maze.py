@@ -43,7 +43,6 @@ class OrtogonalMaze(Maze):
         return 0 <= point.row < self.get_rows() and 0 <= point.column < self.get_columns()
     
     def get_node(self, point: Point) -> Node | None:
-        #FIXME: point seems to not be in self.__map() even if it is!
         if self.__validate(point):
             return self.__map[point]
         return None
@@ -51,7 +50,7 @@ class OrtogonalMaze(Maze):
     def get_node_else_raise(self, point: Point):
         if (node := self.get_node(point)) != None:
             return node
-        raise ValueError()
+        raise ValueError(f"There isn't a Node at {point.as_row_column_tuple()}")
     
     def get_nodes_adjacent_to(self, node: Node):
         adjacent_nodes = set()
@@ -79,7 +78,7 @@ class OrtogonalMaze(Maze):
         )
 
     def there_is_wall(self, node_a: Point, node_b: Point):
-        self._graph.linked(
+        return not self._graph.linked(
             self.get_node_else_raise(node_a), 
             self.get_node_else_raise(node_b)
         )

@@ -33,10 +33,16 @@ class Point:
 
     def __add__(self, other: 'Point') -> 'Point':
         return Point(self.row + other.row, self.column + other.column)
+    
+    def swapped(self):
+        return Point(self.column, self.row)
 
-    def as_tuple(self):
+    def as_row_column_tuple(self):
         return Point.to_tuple(self)
     
+    def as_column_row_tuple(self):
+        return Point.to_tuple(self.swapped())
+
     def __eq__(self, obj: object) -> bool:
         if isinstance(obj, Point):
             return self.row == obj.row and self.column == obj.column

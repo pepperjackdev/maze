@@ -14,6 +14,9 @@ class Edge:
         if isinstance(obj, Edge):
             return self.nodes() == obj.nodes()
         return False
+    
+    def __hash__(self) -> int:
+        return hash(self.__nodes)
 
     def nodes(self) -> frozenset[Node]:
         return self.__nodes

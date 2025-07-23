@@ -1,29 +1,29 @@
 import pygame
 
 from pygame.surface import Surface
-from core import Size, OrtogonalMaze
+from core import OrtogonalMaze
 
 from locals import *
-from maze.core.utils import Point
+from core.utils import Point, Size
 
 class UI:
     def __init__(self) -> None:
-        self.__surface: Surface | None = None
+        self._surface: Surface | None = None
 
     def draw_to(self, target: Surface):
         self.__update_surface(target.get_size())
-        assert self.__surface != None # as __update_surface(...) was called
-        target.blit(self.__surface, (0, 0), self.__surface.get_rect())
+        assert self._surface != None # as __update_surface(...) was called
+        target.blit(self._surface, (0, 0), self._surface.get_rect())
 
     def __update_surface(self, size: tuple[int, int]):
         self.__provide_surface_of_size(size)
-        self.__draw_to_surface()
+        self._draw_to_surface()
 
     def __provide_surface_of_size(self, size: tuple[int, int]):
-        if self.__surface == None or self.__surface.get_size() != size:
-            self.__surface = Surface(size)
+        if self._surface == None or self._surface.get_size() != size:
+            self._surface = Surface(size)
 
-    def __draw_to_surface(self):
+    def _draw_to_surface(self):
         raise NotImplementedError()
 
 class OrtogonalMazeUI(UI):
@@ -32,13 +32,13 @@ class OrtogonalMazeUI(UI):
         self.__maze = maze
 
     def __get_node_size_on_screen(self) -> Size:
-        assert self.__surface != None
+        assert self._surface != None
         return Size(
-            self.__surface.get_height() // self.__maze.get_rows(),
-            self.__surface.get_width() // self.__maze.get_columns()
+            self._surface.get_height() // self.__maze.get_rows(),
+            self._surface.get_width() // self.__maze.get_columns()
         )
 
-    def __draw_to_surface(self):
+    def _draw_to_surface(self):
         self.__draw_walls_to_surface()
 
     def __draw_walls_to_surface(self):
@@ -57,12 +57,12 @@ class OrtogonalMazeUI(UI):
             for col in range(1, self.__maze.get_columns()):
                 leftmost_cell_point, righmost_cell_point = Point(row, col - 1), Point(row, col)
                 if self.__maze.there_is_wall(leftmost_cell_point, righmost_cell_point):
-                    assert self.__surface != None # as this function gets called after __provide_surface_of_size(...)
+                    assert self._surface != None # as this function gets called after __provide_surface_of_size(...)
                     pygame.draw.line(
-                        self.__surface, 
-                        BLACK,
-                        self.__get_point_on_surface_of(Point(row, col)).as_tuple(),
-                        self.__get_point_on_surface_of(Point(row + 1, col)).as_tuple(),
+                        self._surface, 
+                        WHITE,
+                        self.__get_point_on_surface_of(Point(row, col)).as_column_row_tuple(),
+                        self.__get_point_on_surface_of(Point(row + 1, col)).as_column_row_tuple(),
                         2
                     )
 
@@ -71,10 +71,10 @@ class OrtogonalMazeUI(UI):
             for row in range(1, self.__maze.get_rows()):
                 uppermost_cell_point, downmost_cell_point = Point(row - 1, col), Point(row, col)
                 if self.__maze.there_is_wall(uppermost_cell_point, downmost_cell_point):
-                    assert self.__surface != None # as this function gets called after __provide_surface_of_size(...)
+                    assert self._surface != None # as this function gets called after __provide_surface_of_size(...)
                     pygame.draw.line(
-                        self.__surface,
-                        BLACK,
-                        self.__get_point_on_surface_of(Point(row, col)).as_tuple(),
-                        self.__get_point_on_surface_of(Point(row, col + 1)).as_tuple()
+                        self._surface,
+                        WHITE,
+                        self.__get_point_on_surface_of(Point(row, col)).as_column_row_tuple(),
+                        self.__get_point_on_surface_of(Point(row, col + 1)).as_column_row_tuple()
                     )
