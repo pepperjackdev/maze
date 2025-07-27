@@ -1,8 +1,8 @@
 from core.graph import Node
-from core.utils import Size
 from core.maze import Maze, Index
 
-from bidict import bidict
+from core.utils import Size
+
 from dataclasses import dataclass
 
 @dataclass(frozen=True)

@@ -1,12 +1,15 @@
 import pygame
 from pygame.surface import Surface
 
+from abc import ABC, abstractmethod
+
 from core.maze.grid import GridMaze, GridIndex
 from core.utils import Size
+
 from locals import *
 
 
-class UI:
+class UI(ABC):
     def __init__(self) -> None:
         self._surface: Surface | None = None
 
@@ -23,10 +26,24 @@ class UI:
         if self._surface == None or self._surface.get_size() != size:
             self._surface = Surface(size)
 
-    def _draw_to_surface(self):
-        raise NotImplementedError()
+    @abstractmethod
+    def _draw_to_surface(self) -> None: ...
 
-class GridMazeUI(UI):
+class MazeUI(UI):
+    def __init__(self) -> None:
+        super().__init__()
+    
+    def _draw_to_surface(self) -> None:
+        self._draw_walls_to_surface()
+        self._draw_nodes_to_surface()
+
+    @abstractmethod
+    def _draw_walls_to_surface(self) -> None: ...
+
+    @abstractmethod
+    def _draw_nodes_to_surface(self, map: dict) -> None: ...
+
+class GridMazeUI(MazeUI):
     def __init__(self, maze: GridMaze) -> None:
         super().__init__()
         self.__maze = maze
