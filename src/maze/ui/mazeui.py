@@ -1,10 +1,10 @@
 import pygame
-
 from pygame.surface import Surface
-from core import OrtogonalMaze
 
+from core.maze.grid import GridMaze, GridIndex
+from core.utils import Size
 from locals import *
-from core.utils import Point, Size
+
 
 class UI:
     def __init__(self) -> None:
@@ -26,8 +26,8 @@ class UI:
     def _draw_to_surface(self):
         raise NotImplementedError()
 
-class OrtogonalMazeUI(UI):
-    def __init__(self, maze: OrtogonalMaze) -> None:
+class GridMazeUI(UI):
+    def __init__(self, maze: GridMaze) -> None:
         super().__init__()
         self.__maze = maze
 
@@ -45,36 +45,34 @@ class OrtogonalMazeUI(UI):
         self.__draw_horizontal_walls_to_surface()
         self.__draw_vertical_walls_to_surface()
 
-    def __get_point_on_surface_of(self, point: Point) -> Point:
+    def __get_point_on_surface_of(self, index: GridIndex) -> tuple[int, int]:
         node_size_on_screen = self.__get_node_size_on_screen()
-        return Point(
-            point.row * node_size_on_screen.height,
-            point.column * node_size_on_screen.width
-        )
+        return index.column * node_size_on_screen.width, index.row * node_size_on_screen.height
 
     def __draw_vertical_walls_to_surface(self):
         for row in range(self.__maze.get_rows()):
             for col in range(1, self.__maze.get_columns()):
-                leftmost_cell_point, righmost_cell_point = Point(row, col - 1), Point(row, col)
+                leftmost_cell_point, righmost_cell_point = GridIndex(row, col - 1), GridIndex(row, col)
                 if self.__maze.there_is_wall(leftmost_cell_point, righmost_cell_point):
-                    assert self._surface != None # as this function gets called after __provide_surface_of_size(...)
+                    assert self._surface != None
                     pygame.draw.line(
                         self._surface, 
                         WHITE,
-                        self.__get_point_on_surface_of(Point(row, col)).as_column_row_tuple(),
-                        self.__get_point_on_surface_of(Point(row + 1, col)).as_column_row_tuple(),
-                        2
+                        self.__get_point_on_surface_of(GridIndex(row, col)),
+                        self.__get_point_on_surface_of(GridIndex(row + 1, col)),
+                        1
                     )
 
     def __draw_horizontal_walls_to_surface(self):
         for col in range(self.__maze.get_columns()):
             for row in range(1, self.__maze.get_rows()):
-                uppermost_cell_point, downmost_cell_point = Point(row - 1, col), Point(row, col)
+                uppermost_cell_point, downmost_cell_point = GridIndex(row - 1, col), GridIndex(row, col)
                 if self.__maze.there_is_wall(uppermost_cell_point, downmost_cell_point):
-                    assert self._surface != None # as this function gets called after __provide_surface_of_size(...)
+                    assert self._surface != None
                     pygame.draw.line(
                         self._surface,
                         WHITE,
-                        self.__get_point_on_surface_of(Point(row, col)).as_column_row_tuple(),
-                        self.__get_point_on_surface_of(Point(row, col + 1)).as_column_row_tuple()
+                        self.__get_point_on_surface_of(GridIndex(row, col)),
+                        self.__get_point_on_surface_of(GridIndex(row, col + 1)),
+                        1
                     )

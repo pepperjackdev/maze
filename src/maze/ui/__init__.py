@@ -1,1 +1,1 @@
-from .mazeui import UI, OrtogonalMazeUI
+from .mazeui import UI, GridMazeUI

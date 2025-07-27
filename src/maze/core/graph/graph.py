@@ -47,7 +47,7 @@ class Graph:
     def linked(self, node_a: Node, node_b: Node) -> bool:
         return Edge(node_a, node_b) in self.__edges
 
-    def neighbours_of(self, node) -> set[Node]:
+    def neighbours(self, node) -> set[Node]:
         neighbours = set()
         for n in self.__nodes:
             if self.linked(n, node):
