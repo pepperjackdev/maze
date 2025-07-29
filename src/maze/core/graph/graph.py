@@ -1,10 +1,5 @@
 
-class Node:
-    def __str__(self) -> str:
-        return "Node()"
-    
-    def __repr__(self) -> str:
-        return self.__str__()
+class Node: ...
 
 class Edge:
     def __init__(self, node_a: Node, node_b: Node) -> None:

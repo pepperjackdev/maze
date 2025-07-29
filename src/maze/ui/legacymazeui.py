@@ -8,7 +8,6 @@ from core.utils import Size
 
 from locals import *
 
-
 class UI(ABC):
     def __init__(self) -> None:
         self._surface: Surface | None = None
@@ -33,7 +32,7 @@ class MazeUI(UI):
     def __init__(self) -> None:
         super().__init__()
     
-    def _draw_to_surface(self) -> None:
+    def _draw_to_surface(self   ) -> None:
         self._draw_walls_to_surface()
         self._draw_nodes_to_surface()
 
